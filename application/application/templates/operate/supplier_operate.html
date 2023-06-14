@@ -1,0 +1,397 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .header {
+            height: 40px;
+            background-color: red;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            color: white;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+    
+        .header-link {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            margin-left: 20px;
+            text-decoration: none;
+            color: white;
+        }
+    
+        .header-text {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            margin-left: 20px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+          }
+        
+          /* 设置表头行的样式 */
+          tr.header-row {
+            background-color: #f2f2f2;
+          }
+        
+          /* 设置奇数行的样式 */
+          tr:nth-child(odd) {
+            background-color: #e6e6e6;
+          }
+        
+          /* 设置偶数行的样式 */
+          tr:nth-child(even) {
+            background-color: #f9f9f9;
+          }
+        
+          /* 设置单元格的样式 */
+          td {
+            padding: 8px;
+            border: 1px solid #ddd;
+          }
+        
+          /* 设置表头单元格的样式 */
+          th {
+            padding: 8px;
+            border: 1px solid #ddd;
+            font-weight: bold;
+            text-align: left;
+          }
+    
+        .delete, .update {
+            padding: 5px 10px;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #insert {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 4px;
+        }
+    
+        #insert:hover {
+            background-color: #45a049;
+        }
+        #form_select {
+            display: inline-block;
+        }
+    
+        #form_select label {
+            margin-right: 10px;
+        }
+    
+        #form_select input[type="text"] {
+            padding: 4px;
+        }
+    
+        #form_select button {
+            padding: 4px 8px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    
+        #form_select button:hover {
+            background-color: #45a049;
+        }
+
+        dialog {
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f5f5f5;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            max-width: 300px;
+        }
+    
+        /* Style for the dialog box headers */
+        dialog div {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    
+        /* Style for the input labels */
+        dialog label {
+            display: block;
+            margin-bottom: 5px;
+        }
+    
+        /* Style for the input fields */
+        dialog input {
+            width: 100%;
+            padding: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+    
+        /* Style for the buttons */
+        dialog button {
+            padding: 5px 10px;
+            margin-right: 5px;
+            border: none;
+            border-radius: 3px;
+            color: #fff;
+            background-color: #337ab7;
+            cursor: pointer;
+        }
+    
+        /* Style for the cancel button */
+        #insert_model #button_cancel,
+        #update_model #update_button_cancel,
+        #delete_model #delete_button_cancel {
+            background-color: #ccc;
+        }
+    </style>
+    {% load static %}
+    <script src="{% static 'js/jquery.js' %}"></script>
+</head>
+
+<body>
+    <div class="header">
+        <div class="header-left">
+            <a href="../view_staff" class="header-link">首页</a>
+            <a href="../supplier_operate" class="header-link">修改供应商信息</a>
+            <a href="../deliery_operate" class="header-link">修改配送员信息</a>
+            <a href="../gas_in_operate" class="header-link">查看/添加入库信息</a>
+            <a href="../deliery_search" class="header-link">查看配送员送货数量</a>
+            <a href="../gas_out_operate" class="header-link">查看出库信息</a>
+            <a href="../gas_operate" class="header-link">添加/修改煤气信息</a>
+        </div>
+        <div class="header-right">
+            <a href="../../login/login_staff" class="header-link">退出登录</a>
+            <span class="header-text">你好{{staff_name}}</span>
+        </div>
+    </div>
+    <div>
+        <span style="float: left"><button id="insert">新建供应商</button></span>
+        <span style="float: left;padding-left: 80px;">
+            <form method="post" id="form_select" action="">
+                <label for="inf">请输入需要查找的信息（供应商编号、姓名）</label>
+                <input type="text" name="selectinf" id="inf">
+                <button id="select">查找</button>
+                <br>
+            </form>
+        </span>
+
+    </div>
+    <br>
+    {% if error %}
+    <script>
+        alert("插入错误");
+    </script>
+    {% endif %}
+    
+    <dialog 
+        id="insert_model" style="display:none;margin-top:20px">
+        <div>
+            <span>新建供应商</span>
+
+        </div>
+        <br>
+        <form id="insert_form" method="post" action="">
+            <label for="insertnum">请输入编号</label>
+            <input id="insertnum" placeholder="请输入编号" name="supplier_id">
+            <br>
+            <label id="insertname">请输入姓名</label>
+            <input id="insertname" placeholder="请输入姓名" name="name">
+            <br>
+            <label for="insertphonenum">请输入电话号码</label>
+            <input id="insertphonenum" placeholder="请输入电话号码" name="phonenum">
+            <br>
+           
+            <button id="button_confirm" type="submit">确认</button>
+            <button id="button_cancel" type="button">取消</button>
+        </form>
+
+        <br>
+    </dialog>
+
+    <dialog id="update_model" style="display: none;margin-top:20px">
+        <div>
+            <span>修改供应商</span>
+
+        </div>
+        <br>
+        <form id="update_form" method="post" action="">
+            <label for="updatenum">请输入编号</label>
+            <input id="updatenum" placeholder="请输入编号" name="update_supplier_id" >
+            <br>
+            <label id="updatename">请输入姓名</label>
+            <input id="updatename" placeholder="请输入姓名" name="name">
+            <br>
+            <label for="updatephonenum">请输入电话号码</label>
+            <input id="updatephonenum" placeholder="请输入电话号码" name="phonenum">
+            <br>
+            
+            <button id="update_button_confirm" type="submit">确认</button>
+            <button id="update_button_cancel" type="button">取消</button>
+        </form>
+
+        <br>
+    </dialog>
+    <dialog id="delete_model" style="display: none;">
+        <form id="delete_form" method="post" action="">
+            <label for="deletenum">确认删除</label>
+            <input id="deletenum"  name="supplier_id" type="text" >
+            <button id="delete_button_confirm" type="submit">确认</button>
+            <button id="delete_button_cancel" type="button">取消</button>
+        </form>
+    </dialog>
+    <table style="border:10px black;display: block;margin-top: 40px;" id="table_initial">
+        {% if supplier_list %}
+        <tr>
+            <td>编号</td>
+            <td>姓名</td>
+            <td>电话号码</td>
+            
+            <td></td>
+            <td></td>
+        </tr>
+        {% for supplier in supplier_list %}
+        <tr>
+            <td>{{supplier.num}}</td>
+            <td>{{supplier.name}}</td>
+            <td>{{supplier.phonenum}}</td>
+            
+            <td><button id="delete{{supplier.num}}" class="delete">删除</button></td>
+            <td><button id="update{{supplier.num}}" class="update">修改</button></td>
+        </tr>
+        {% endfor %}
+        {% endif %}
+    </table>
+
+    <script>
+        function insert_activate() {
+            var insert_model = document.getElementById('insert_model');
+            insert_model.style.display = 'block';
+        }
+        function insert_close() {
+            var insert_model = document.getElementById('insert_model');
+            insert_model.style.display = 'none';
+        }
+        function delete_react( delete_button) {
+            var id=delete_button.id
+            var regex = /\d+/g;
+            var match = id.match(regex);
+            id = match[0];
+            console.log("delete"+id)
+            
+            var delete_model = document.getElementById('delete_model');
+            delete_model.style.display = 'block';
+            var dialog=document.getElementById("deletenum");
+            dialog.value=id;
+            console.log(dialog.value);
+           
+            // delete_button.addEventListener('click', function () {
+            //     var data = { supplier_id: id ,delete:true};
+            //     $.ajax({
+            //         url: "http://127.0.0.1:8000/" + staff_id + '/supplier_operate/',
+            //         type: 'POST',
+
+            //         data: JSON.stringify(data),
+            //         contentType: 'text/html',
+            //         success: function (response, xhr) {
+            //             // window.location.href = "../../" + staff_id + '/supplier_operate/';
+            //             console.log(response);
+
+            //         },
+            //         error: function (xhr, status, error) {
+            //             // 请求失败的处理代码
+            //             console.log(0);
+            //         },
+            //         xhr: function () {
+            //             var xhr = new XMLHttpRequest();
+            //             xhr.onreadystatechange = function () {
+            //                 console.log('readyState:', xhr.readyState);
+            //             };
+            //             return xhr;
+            //         }
+
+            //     })
+            // })
+
+        }
+        function update_react(update_button){
+            var update_model=document.getElementById("update_model");
+            update_model.style.display='block';
+            
+            id=update_button.id
+            var regex = /\d+/g;
+            var match = id.match(regex);
+            id = match[0];
+            var dialog=document.getElementById("updatenum");
+            dialog.value=id;
+            dialog.placeholder=id;
+            
+        }
+        function update_close() {
+            var update_model = document.getElementById('update_model');
+            update_model.style.display = 'none';
+        }
+        function delete_close() {
+            var delete_model = document.getElementById('delete_model');
+            delete_model.style.display = 'none';
+        }
+        var insert = document.getElementById('insert');
+        var close = document.getElementById('button_cancel');
+        var select = document.getElementById('select');
+
+        var form_select = document.getElementById('form_select');
+        var staff_id = window.location.pathname;
+        var regex = /\d+/g;
+        var match = staff_id.match(regex);
+        staff_id = match[0];
+
+
+
+        var errori = document.getElementById('errorinsert');
+        var successi = document.getElementById('successinsert');
+
+        insert.addEventListener('click', function () { insert_activate() });
+        close.addEventListener('click', function () { insert_close() });
+
+        select.addEventListener('click', function () { form_select.submit() });
+        var delete_elements = document.querySelectorAll('.delete');
+        var update_elements = document.querySelectorAll('.update');
+        delete_elements.forEach(element => {
+            element.addEventListener('click', function(){delete_react(element)});
+        });
+        update_elements.forEach(element => {
+            element.addEventListener('click', function(){update_react(element)});
+        });
+        var update_cancel=document.getElementById("update_button_cancel");
+        update_cancel.addEventListener('click',function(){update_close()});
+        var delete_cancel=document.getElementById("delete_button_cancel");
+        delete_cancel.addEventListener('click',function(){delete_close()});
+        // select功能未实现
+        
+
+
+    </script>
+</body>
+
+</html>

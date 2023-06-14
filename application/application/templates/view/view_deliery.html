@@ -1,0 +1,164 @@
+<html>
+    <head>
+        <title>
+
+        </title>
+        {% load static %}
+        <script src="{% static 'js/echarts.min.js' %}"></script>
+        <style>
+            .header {
+                height: 40px;
+                background-color: red;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0 20px;
+                color: white;
+            }
+    
+            .header-left {
+                display: flex;
+                align-items: center;
+            }
+    
+            .header-right {
+                display: flex;
+                align-items: center;
+            }
+    
+            .header-link {
+                height: 100%;
+                display: flex;
+                align-items: center;
+                margin-left: 20px;
+                text-decoration: none;
+                color: white;
+            }
+    
+            .header-text {
+                height: 100%;
+                display: flex;
+                align-items: center;
+                margin-left: 20px;
+            }
+            .chart-container {
+                  width: 50%;
+                  height: 400px;
+                  float: left;
+                }
+                table {
+                    border-collapse: collapse;
+                    width: 100%;
+                  }
+                
+                  /* 设置表头行的样式 */
+                  tr.header-row {
+                    background-color: #f2f2f2;
+                  }
+                
+                  /* 设置奇数行的样式 */
+                  tr:nth-child(odd) {
+                    background-color: #e6e6e6;
+                  }
+                
+                  /* 设置偶数行的样式 */
+                  tr:nth-child(even) {
+                    background-color: #f9f9f9;
+                  }
+                
+                  /* 设置单元格的样式 */
+                  td {
+                    padding: 8px;
+                    border: 1px solid #ddd;
+                  }
+                
+                  /* 设置表头单元格的样式 */
+                  th {
+                    padding: 8px;
+                    border: 1px solid #ddd;
+                    font-weight: bold;
+                    text-align: left;
+                  }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <div class="header-left">
+                <a href="../view_staff" class="header-link">首页</a>
+                <a href="../supplier_operate" class="header-link">修改供应商信息</a>
+                <a href="../deliery_operate" class="header-link">修改配送员信息</a>
+                <a href="../gas_in_operate" class="header-link">查看/添加入库信息</a>
+                <a href="../deliery_search" class="header-link">查看配送员送货数量</a>
+                <a href="../gas_out_operate" class="header-link">查看出库信息</a>
+            </div>
+            <div class="header-right">
+                <a href="../../login/login_staff" class="header-link">退出登录</a>
+                <span class="header-text">你好{{staff_name}}</span>
+            </div>
+        </div>
+        <div>
+            <table>
+                <tr>
+                    <th>配送员编号</td>
+                    <th>配送员姓名</td>
+                    <th>配送总数</td>
+                </tr>
+                <tr>
+                    <td>{{deliery_id}}</td>
+                    <td>{{deliery_name}}</td>
+                    <td>{{total_amount}}</td>
+                </tr>
+            </table>
+        </div>
+        {% if day_list and day_list_y and month_list and month_list_y%}
+    <div class="chart-container" id="chart3" style="margin-top:100px"></div>
+    <div class="chart-container" id="chart4" style="margin-top:100px"></div>
+    <script>
+       
+        var x_data3 = [{{ day_list|join:", " }}];
+        var y_data3 = [{{ day_list_y|join:", " }}];
+        console.log(x_data3)
+        var chart3 = echarts.init(document.getElementById('chart3'));
+        var option3 = {
+            title: {
+                text: "{{deliery_id}}号送货员{{deliery_name}}本月度送货趋势一览"
+            },
+            xAxis: {
+                data: x_data3
+            },
+            yAxis: {
+
+            },
+            series: [{
+                name: '示例数据',
+                type: 'line',
+                data: y_data3
+            }]
+        };
+        chart3.setOption(option3);
+        var x_data4 = [{{ month_list|join:", " }}];
+        var y_data4 = [{{ month_list_y|join:", " }}];
+        console.log(x_data4)
+        var chart4 = echarts.init(document.getElementById('chart4'));
+        var option4 = {
+            title: {
+                text: "{{deliery_id}}号送货员{{deliery_name}}本年度送货趋势一览"
+            },
+            xAxis: {
+                data: x_data4
+            },
+            yAxis: {
+
+            },
+            series: [{
+                name: '示例数据',
+                type: 'line',
+                data: y_data4
+            }]
+        };
+        chart4.setOption(option4);
+    
+    </script> 
+    {% endif %}
+    </body>
+</html>

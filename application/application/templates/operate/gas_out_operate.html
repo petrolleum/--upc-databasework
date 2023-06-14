@@ -1,0 +1,276 @@
+<html>
+
+<head>
+    <title></title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/calendar.css' %}">
+    <style>
+        .header {
+            height: 40px;
+            background-color: red;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            color: white;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+    
+        .header-link {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            margin-left: 20px;
+            text-decoration: none;
+            color: white;
+        }
+    
+        .header-text {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            margin-left: 20px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+          }
+        
+          /* 设置表头行的样式 */
+          tr.header-row {
+            background-color: #f2f2f2;
+          }
+        
+          /* 设置奇数行的样式 */
+          tr:nth-child(odd) {
+            background-color: #e6e6e6;
+          }
+        
+          /* 设置偶数行的样式 */
+          tr:nth-child(even) {
+            background-color: #f9f9f9;
+          }
+        
+          /* 设置单元格的样式 */
+          td {
+            padding: 8px;
+            border: 1px solid #ddd;
+          }
+        
+          /* 设置表头单元格的样式 */
+          th {
+            padding: 8px;
+            border: 1px solid #ddd;
+            font-weight: bold;
+            text-align: left;
+          }
+    
+        .delete, .update {
+            padding: 5px 10px;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #insert {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 4px;
+        }
+    
+        #insert:hover {
+            background-color: #45a049;
+        }
+        #form_select {
+            display: inline-block;
+        }
+    
+        #form_select label {
+            margin-right: 10px;
+        }
+    
+        #form_select input[type="text"] {
+            padding: 4px;
+        }
+    
+        #form_select button {
+            padding: 4px 8px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    
+        #form_select button:hover {
+            background-color: #45a049;
+        }
+
+        dialog {
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f5f5f5;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            max-width: 300px;
+        }
+    
+        /* Style for the dialog box headers */
+        dialog div {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    
+        /* Style for the input labels */
+        dialog label {
+            display: block;
+            margin-bottom: 5px;
+        }
+    
+        /* Style for the input fields */
+        dialog input {
+            width: 100%;
+            padding: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+    
+        /* Style for the buttons */
+        dialog button {
+            padding: 5px 10px;
+            margin-right: 5px;
+            border: none;
+            border-radius: 3px;
+            color: #fff;
+            background-color: #337ab7;
+            cursor: pointer;
+        }
+    
+        /* Style for the cancel button */
+        #insert_model #button_cancel,
+        #update_model #update_button_cancel,
+        #delete_model #delete_button_cancel {
+            background-color: #ccc;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div class="header-left">
+            <a href="../view_staff" class="header-link">首页</a>
+            <a href="../supplier_operate" class="header-link">修改供应商信息</a>
+            <a href="../deliery_operate" class="header-link">修改配送员信息</a>
+            <a href="../gas_in_operate" class="header-link">查看/添加入库信息</a>
+            <a href="../deliery_search" class="header-link">查看配送员送货数量</a>
+            <a href="../gas_out_operate" class="header-link">查看出库信息</a>
+            <a href="../gas_operate" class="header-link">添加/修改煤气信息</a>
+        </div>
+        <div class="header-right">
+            <a href="../../login/login_staff" class="header-link">退出登录</a>
+            <span class="header-text">你好{{staff_name}}</span>
+        </div>
+    </div>
+    <div>
+        <span style="float: left;padding-left: 80px;">
+            <form method="post" id="form_select" action="">
+                <label for="fangshi">选择查询内容</label>
+                <select id="fangshi" name="fangshi" type="text">
+                    <option value="gas_out_num">编号</option>
+                    <option value="date">出库日期(year-month-day的形式)</option>
+                    <option value="categroy_id">煤气种类编号</option>
+                    <option value="customer_pho">客户编号</option>
+                    <option value="is_deliery">是否配送(填‘是’或‘否’)</option>
+                </select>
+                <label for="inf">请输入需要查找的信息（入库编号、日期等）</label>
+                <input type="text" name="selectinf" id="inf">
+                <button id="select">查找</button>
+                <br>
+            </form>
+        </span>
+
+    </div>
+    <table style="border:10px black;display: block;margin-top: 40px;">
+        
+        <tr>
+            <td>编号</td>
+            <td>出库日期</td>
+            <td>煤气种类编号</td>
+            <td>客户编号</td>
+            <td>入库数量</td>
+            <td>煤气单价</td>
+            <td>是否配送</td>
+            
+        </tr>
+        {% if gas_out_list %}
+        {% for gas_out in gas_out_list %}
+        <tr>
+            <td>{{gas_out.num}}</td>
+            <td>{{gas_out.date}}</td>
+            <td>{{gas_out.category_num.num}}</td>
+            <td>{{gas_out.customer_pho.phonenum}}</td>
+            <td>{{gas_out.amount}}</td>
+            <td>{{gas_out.per_price}}</td>
+            {% if not gas_out.is_deliery %}
+            <td>否</td>
+            {% endif %}
+            {% if gas_out.is_deliery %}
+            <td>是</td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+        {% endif %}
+        {% if filter_list %}
+        {% for gas_out in filter_list %}
+        <tr>
+            <td>{{gas_out.num}}</td>
+            <td>{{gas_out.date}}</td>
+            <td>{{gas_out.category_num.num}}</td>
+            <td>{{gas_out.customer_pho.phonenum}}</td>
+            <td>{{gas_out.amount}}</td>
+            <td>{{gas_out.per_price}}</td>
+            {% if not gas_out.is_deliery %}
+            <td>否</td>
+            {% endif %}
+            {% if gas_out.is_deliery %}
+            <td>是</td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+        {% endif %}
+    </table>
+    <script>
+        function insert_activate() {
+            var insert_model = document.getElementById('insert_model');
+            insert_model.style.display = 'block';
+        }
+        function insert_close() {
+            var insert_model = document.getElementById('insert_model');
+            insert_model.style.display = 'none';
+        }
+        var insert = document.getElementById('insert');
+    var close = document.getElementById('button_cancel');
+    
+    insert.addEventListener('click', function () { insert_activate() });
+    close.addEventListener('click', function () { insert_close() });
+
+
+    
+    </script>
+</body>
+
+</html>

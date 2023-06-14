@@ -1,0 +1,280 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+        {% load static %}
+        <script src="{% static 'js/echarts.min.js' %}"></script>
+      
+        <style>
+            .header {
+                height: 40px;
+                background-color: red;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0 20px;
+                color: white;
+            }
+        
+            .header-left {
+                display: flex;
+                align-items: center;
+            }
+        
+            .header-right {
+                display: flex;
+                align-items: center;
+            }
+        
+            .header-link {
+                height: 100%;
+                display: flex;
+                align-items: center;
+                margin-left: 20px;
+                text-decoration: none;
+                color: white;
+            }
+        
+            .header-text {
+                height: 100%;
+                display: flex;
+                align-items: center;
+                margin-left: 20px;
+            }
+            .chart-container {
+              width: 50%;
+              height: 400px;
+              float: left;
+            }
+            
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+        
+            th, td {
+                padding: 8px;
+                text-align: left;
+                border-bottom: 1px solid #ddd;
+            }
+        
+            th {
+                background-color: #f2f2f2;
+            }
+        
+            .add_deliery {
+                padding: 5px 10px;
+                background-color: #3498db;
+                color: #fff;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            dialog {
+                padding: 10px;
+                border-radius: 5px;
+                background-color: #f5f5f5;
+                border: 1px solid #ccc;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                max-width: 300px;
+            }
+        
+            /* Style for the dialog box headers */
+            dialog div {
+                text-align: center;
+                font-weight: bold;
+                margin-bottom: 10px;
+            }
+        
+            /* Style for the input labels */
+            dialog label {
+                display: block;
+                margin-bottom: 5px;
+            }
+        
+            /* Style for the input fields */
+            dialog input {
+                width: 100%;
+                padding: 5px;
+                margin-bottom: 10px;
+                border: 1px solid #ccc;
+                border-radius: 3px;
+            }
+        
+            /* Style for the buttons */
+            dialog button {
+                padding: 5px 10px;
+                margin-right: 5px;
+                border: none;
+                border-radius: 3px;
+                color: #fff;
+                background-color: #337ab7;
+                cursor: pointer;
+            }
+        
+            /* Style for the cancel button */
+            #insert_model #button_cancel,
+            #update_model #update_button_cancel,
+            #delete_model #delete_button_cancel {
+                background-color: #ccc;
+            }
+          </style>
+    
+    </head>
+    <body>
+        {% if error %}
+        <script>
+            alert("分配失败！");
+        </script>
+        {% endif %}
+        {% if success %}
+        <script>
+            alert("分配成功！");
+        </script>
+        {% endif %}
+        <div class="header">
+            <div class="header-left">
+                <a href="../view_staff" class="header-link">首页</a>
+                <a href="../supplier_operate" class="header-link">修改供应商信息</a>
+                <a href="../deliery_operate" class="header-link">修改配送员信息</a>
+                <a href="../gas_in_operate" class="header-link">查看/添加入库信息</a>
+                <a href="../deliery_search" class="header-link">查看配送员送货数量</a>
+                <a href="../gas_out_operate" class="header-link">查看出库信息</a>
+                <a href="../gas_operate" class="header-link">添加/修改煤气信息</a>
+            </div>
+            <div class="header-right">
+                <a href="../../login/login_staff" class="header-link">退出登录</a>
+                <span class="header-text">你好{{staff_name}}</span>
+            </div>
+        </div>
+        <dialog style="display: none;margin-top: 30px;" id="deliery_model">
+            <div>分配配送员</div>
+            <form method="post" >
+                <label for="gas_out_num">出库序号</label>
+                <input id="gas_out_num" type="text" name="gas_out_num">
+                <br>
+                <label for="deliery">选择配送员</label>
+                <select name="deliery" id="deliery">
+                    {% if deliery_list %}
+                    {% for deliery in deliery_list %}
+                    <option value="{{deliery.num}}">{{deliery.num}},{{deliery.name}}</option>
+                    {% endfor %}
+                    {% endif %}
+                </select>
+                <br>
+                <button id="deliery_button_confirm" type="submit">确认</button>
+                <button id="deliery_button_cancel" type="button">取消</button>
+            </form>
+
+        </dialog>
+        <div>
+            <div>待分配配送员：</div>
+            <table>
+                <tr>
+                    <td>出库序号</td>
+                    <td>出库日期</td>
+                    <td>煤气种类编号</td>
+                    <td>客户编号</td>
+                    <td>购买数量</td>
+                    <td>购买单价</td>
+                    <td></td>
+                    
+                </tr>
+                {% if gas_out_list %}
+                {% for gas_out in gas_out_list %}
+                <tr>
+                    <td>{{gas_out.num}}</td>
+                    <td>{{gas_out.date}}</td>
+                    <td>{{gas_out.category_num.num}}</td>
+                    <td>{{gas_out.customer_pho.phonenum}}</td>
+                    <td>{{gas_out.amount}}</td>
+                    <td>{{gas_out.per_price}}</td>
+                    <td><button id="deliery{{gas_out.num}}" class="add_deliery">分配配送员</button></td>                   
+                </tr>
+                {% endfor %}
+                {% endif %}
+            </table>
+
+        </div>
+  <div class="chart-container" id="chart1" style="margin-top:100px"></div>
+  <div class="chart-container" id="chart2" style="margin-top:100px"></div>
+
+  
+  <script>
+    var x_data = [{{ x_list|join:", " }}];
+    var y_data = [{{ y_list|join:", " }}];
+    var chart1 = echarts.init(document.getElementById('chart1'));
+    var option1 = {
+        title: {
+          text: '客户购买煤气数量前十一览'
+        },
+        xAxis: {
+          data: x_data
+        },
+        yAxis: {
+            
+        },
+        series: [{
+          name: '示例数据',
+          type: 'bar',
+          data: y_data
+        }]
+      };
+      
+      chart1.setOption(option1);
+      
+
+    // 初始化第二个图表（chart2）
+    var x_data1 = [{{ x_list1|join:", " }}];
+    var y_data1 = [{{ y_list1|join:", " }}];
+    var chart2 = echarts.init(document.getElementById('chart2'));
+    var option2 = {
+        title: {
+            text: '送货员送货数量前十一览'
+          },
+          xAxis: {
+            data: x_data1
+          },
+          yAxis: {
+              
+          },
+          series: [{
+            name: '示例数据',
+            type: 'bar',
+            data: y_data1
+          }]
+    };
+    chart2.setOption(option2);
+  </script>
+        
+        
+        <script>
+            function deliery_react(deliery_button) {
+                var id = deliery_button.id
+                var regex = /\d+/g;
+                var match = id.match(regex);
+                id = match[0];
+                console.log("deliery" + id)
+    
+                var deliery_model = document.getElementById('deliery_model');
+                deliery_model.style.display = 'block';
+                var dialog = document.getElementById("gas_out_num");
+                dialog.value = id;
+                console.log(dialog.value);
+    
+            }
+            function deliery_close() {
+                var deliery_model = document.getElementById('deliery_model');
+                deliery_model.style.display = 'none';
+            }
+            var close=document.getElementById("deliery_button_cancel");
+            close.addEventListener('click',function(){deliery_close()})
+            var deliery_elements = document.querySelectorAll('.add_deliery');
+            deliery_elements.forEach(element => {
+                element.addEventListener('click', function () { deliery_react(element) });
+            });
+        </script>
+    </body>
+</html>

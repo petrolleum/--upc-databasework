@@ -1,0 +1,318 @@
+<html>
+
+<head>
+    <title></title>
+    <style>
+        .header {
+            height: 40px;
+            background-color: red;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            color: white;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+    
+        .header-link {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            margin-left: 20px;
+            text-decoration: none;
+            color: white;
+        }
+    
+        .header-text {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            margin-left: 20px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+          }
+        
+          /* 设置表头行的样式 */
+          tr.header-row {
+            background-color: #f2f2f2;
+          }
+        
+          /* 设置奇数行的样式 */
+          tr:nth-child(odd) {
+            background-color: #e6e6e6;
+          }
+        
+          /* 设置偶数行的样式 */
+          tr:nth-child(even) {
+            background-color: #f9f9f9;
+          }
+        
+          /* 设置单元格的样式 */
+          td {
+            padding: 8px;
+            border: 1px solid #ddd;
+          }
+        
+          /* 设置表头单元格的样式 */
+          th {
+            padding: 8px;
+            border: 1px solid #ddd;
+            font-weight: bold;
+            text-align: left;
+          }
+    
+        .buy {
+            padding: 5px 10px;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #insert {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 4px;
+        }
+    
+        #insert:hover {
+            background-color: #45a049;
+        }
+        #form_select {
+            display: inline-block;
+        }
+    
+        #form_select label {
+            margin-right: 10px;
+        }
+    
+        #form_select input[type="text"] {
+            padding: 4px;
+        }
+    
+        #form_select button {
+            padding: 4px 8px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    
+        #form_select button:hover {
+            background-color: #45a049;
+        }
+
+        dialog {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 10px;
+        border-radius: 5px;
+        background-color: #f5f5f5;
+        border: 1px solid #ccc;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        max-width: 300px;
+        margin:  auto;
+
+
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f5f5f5;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            max-width: 300px;
+        }
+    
+        /* Style for the dialog box headers */
+        dialog div {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    
+        /* Style for the input labels */
+        dialog label {
+            display: block;
+            margin-bottom: 5px;
+        }
+    
+        /* Style for the input fields */
+        dialog input {
+            width: 100%;
+            padding: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+    
+        /* Style for the buttons */
+        dialog button {
+            padding: 5px 10px;
+            margin-right: 5px;
+            border: none;
+            border-radius: 3px;
+            color: #fff;
+            background-color: #337ab7;
+            cursor: pointer;
+        }
+    
+        /* Style for the cancel button */
+        #insert_model #button_cancel,
+        #update_model #update_button_cancel,
+        #delete_model #delete_button_cancel {
+            background-color: #ccc;
+        }
+    </style>
+    {% load static %}
+    <script src="{% static 'js/jquery.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/calendar.css' %}">
+    
+</head>
+
+<body>
+    
+    <div class="header">
+        <div class="header-left">
+            <a href="../view_customer" class="header-link">首页</a>
+            
+        </div>
+        <div class="header-right">
+            <a href="../home_customer" class="header-link">余额：{{money}} </a>
+            <a href="../home_customer" class="header-link">个人主页</a>
+            <a href="../../login/login_customer" class="header-link">退出登录</a>
+            <span class="header-text">你好{{customer_name}}</span>
+        </div>
+    </div>
+    {% if success %}
+    <script>
+        alert("成功购买");
+    </script>
+    {% endif %}
+    {% if error %}
+    <script>
+        alert("购买失败");
+    </script>
+    {% endif %}
+    <div>
+        
+        <span style="float: left;padding-left: 80px;">
+            <form method="post" id="form_select" action="">
+                <label for="fangshi">选择查询内容</label>
+                <select id="fangshi" name="fangshi">
+                    <option value="gas_id">煤气编号</option>
+                    <option value="gas_name">煤气名称</option>
+                </select>
+                <label for="inf">请输入需要查找的信息（入库编号、日期等）</label>
+                <input type="text" name="selectinf" id="inf">
+                <button id="select">查找</button>
+                <br>
+            </form>
+        </span>
+
+    </div>
+    <dialog id="buy_model" style="display: none;">
+        <form id="buy_form" method="post" action="">
+            <label for="buynum">确认购买</label>
+            <input id="buynum"  name="buy_id" type="text" >
+            <br>
+            <label for="buysum">购买数量</label>
+            <input id="buysum" name="buy_sum" type="text">
+            <button id="buy_button_confirm" type="submit">确认</button>
+            <button id="buy_button_cancel" type="button">取消</button>
+        </form>
+    </dialog>
+
+    
+
+    <table style="border:10px black;display: block;margin-top: 40px;">
+        {% if gas_list %}
+        <tr>
+            <th>煤气编号</th>
+            <th>煤气名称</th>
+            <th>煤气库存</th>
+            <th>煤气单价</th>
+            <th>煤气描述</th>
+            
+            <td></td>
+           
+        </tr>
+        {% for gas in gas_list %}
+        <tr>
+            <td>{{gas.num}}</td>
+            <td>{{gas.category_name}}</td>
+            <td>{{gas.storage}}</td>
+            <td>{{gas.price}}</td>
+            <td >{{gas.discription}}</td>
+            <td><button id="ini{{gas.num}}" class="buy">购买</button></td>
+            
+        </tr>
+        {% endfor %}
+        {% endif %}
+        {% if filter_list %}
+        <tr>
+            <td>煤气编号</td>
+            <td>煤气名称</td>
+            <td>煤气库存</td>
+            <td>煤气单价</td>
+            <td>煤气描述</td>
+            
+            <td></td>
+           
+        </tr>
+        {% for gas in filter_list %}
+        <tr>
+            <td>{{gas.num}}</td>
+            <td>{{gas.category_name}}</td>
+            <td>{{gas.storage}}</td>
+            <td>{{gas.price}}</td>
+            <td >{{gas.discription}}</td>
+            <td><button id="sel{{gas.num}}" class="buy">购买</button></td>
+            
+        </tr>
+        {% endfor %}
+        {% endif %}
+    </table>
+    <script>
+        
+        function buy_react( delete_button) {
+            var id=delete_button.id
+            var regex = /\d+/g;
+            var match = id.match(regex);
+            id = match[0];           
+            var delete_model = document.getElementById('buy_model');
+            delete_model.style.display = 'block';
+            var dialog=document.getElementById("buynum");
+            dialog.value=id;
+            console.log(dialog.value);
+        }
+        function buy_close() {
+            var buy_model = document.getElementById('buy_model');
+            buy_model.style.display = 'none';
+        }
+        var buy_elements = document.querySelectorAll('.buy');
+        buy_elements.forEach(element => {
+            element.addEventListener('click', function(){buy_react(element)});
+        });
+        var buy_close_button=document.getElementById("buy_button_cancel");
+        buy_close_button.addEventListener('click',function(){buy_close()})
+
+        
+    </script>
+</body>
+
+</html>

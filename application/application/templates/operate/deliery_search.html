@@ -1,0 +1,315 @@
+<html>
+
+<head>
+    <title></title>
+    {% load static %}
+        <script src="{% static 'js/echarts.min.js' %}"></script>
+    <style>
+        .header {
+            height: 40px;
+            background-color: red;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            color: white;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-link {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            margin-left: 20px;
+            text-decoration: none;
+            color: white;
+        }
+
+        .header-text {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            margin-left: 20px;
+        }
+        .chart-container {
+              width: 50%;
+              height: 400px;
+              float: left;
+            }
+           table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  /* 设置表头行的样式 */
+  tr.header-row {
+    background-color: #f2f2f2;
+  }
+
+  /* 设置奇数行的样式 */
+  tr:nth-child(odd) {
+    background-color: #e6e6e6;
+  }
+
+  /* 设置偶数行的样式 */
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
+  /* 设置单元格的样式 */
+  td {
+    padding: 8px;
+    border: 1px solid #ddd;
+  }
+
+  /* 设置表头单元格的样式 */
+  th {
+    padding: 8px;
+    border: 1px solid #ddd;
+    font-weight: bold;
+    text-align: left;
+  }
+  .form-container {
+    margin-top: 50px;
+  }
+
+  /* 设置表单的通用样式 */
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* 设置标签样式 */
+  label {
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+
+  /* 设置选择框样式 */
+  select {
+    width: 200px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+
+  /* 设置输入框样式 */
+  input[type="submit"] {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  /* 设置输入框鼠标悬停样式 */
+  input[type="submit"]:hover {
+    background-color: #45a049;
+  }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div class="header-left">
+            <a href="../view_staff" class="header-link">首页</a>
+            <a href="../supplier_operate" class="header-link">修改供应商信息</a>
+            <a href="../deliery_operate" class="header-link">修改配送员信息</a>
+            <a href="../gas_in_operate" class="header-link">查看/添加入库信息</a>
+            <a href="../deliery_search" class="header-link">查看配送员送货数量</a>
+            <a href="../gas_out_operate" class="header-link">查看出库信息</a>
+            <a href="../gas_operate" class="header-link">添加/修改煤气信息</a>
+        </div>
+        <div class="header-right">
+            <a href="../../login/login_staff" class="header-link">退出登录</a>
+            <span class="header-text">你好{{staff_name}}</span>
+        </div>
+    </div>
+    <div class="form-container">
+        <form method="post">
+          <label for="input_deliery">请输入要查看的配送员</label>
+          <select id="input_deliery" name="deliery_id">
+            {% if deliery_staff %}
+              {% for staff in deliery_staff %}
+                <option value="{{staff.num}}">{{staff.num}},{{staff.name}}</option>
+              {% endfor %}
+            {% endif %}
+          </select>
+          <label for="input_year">请输入要查看的年份</label>
+          <select id="input_year" name="year">
+            <option value="2022">2022</option>
+            <option value="2023">2023</option>
+          </select>
+          <br>
+          <label for="input_month">请输入要查看的月份</label>
+          <select id="input_month" name="month">
+            <option value="01">一月</option>
+            <option value="02">二月</option>
+            <option value="03">三月</option>
+            <option value="04">四月</option>
+            <option value="05">五月</option>
+            <option value="06">六月</option>
+            <option value="07">七月</option>
+            <option value="08">八月</option>
+            <option value="09">九月</option>
+            <option value="10">十月</option>
+            <option value="11">十一月</option>
+            <option value="12">十二月</option>
+          </select>
+          <br>
+          <input type="submit">
+        </form>
+    {% if deliery %}
+    <div class="chart-container" id="table" style="margin-top:100px">
+        <table>
+            <tr>
+                <th>配送员编号</th>
+                <th>配送员姓名</th>
+                <th>配送员共送煤气数量</th>
+            <tr>
+                {% if deliery %}
+                {% for i,j,k in deliery %}
+            <tr>
+                <td>{{i}}</td>
+                <td>{{j}}</td>
+                <td>{{k}}</td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+        </table>
+    </div>
+    <div class="chart-container" id="chart1" style="margin-top:100px"></div>
+    {% if x_list1 and y_list1%}
+    <script>
+        var x_data1 = [{{ x_list1|join:", " }}];
+        var y_data1 = [{{ y_list1|join:", " }}];
+        console.log(x_data1)
+        var chart1 = echarts.init(document.getElementById('chart1'));
+        var option1 = {
+            title: {
+                text: '送货员送货数量一览'
+            },
+            xAxis: {
+                data: x_data1
+            },
+            yAxis: {
+
+            },
+            series: [{
+                name: '示例数据',
+                type: 'bar',
+                data: y_data1
+            }]
+        };
+        chart1.setOption(option1);
+    </script> 
+    {% endif %}
+    {% endif %}
+    {% if deliery_id %}
+    <div class="chart-container" style="margin-top:100px">
+        <table>
+            <tr>
+                <td>配送员编号</td>
+                <td>配送员姓名</td>
+                <td>配送员共送煤气数量</td>
+            </tr>
+            <tr>
+                <td>{{deliery_id}}</td>
+                <td>{{deliery_name}}</td>
+                <td>{{ans_month}}</td>
+            </tr>
+        </table>
+    </div>
+    {% endif %}
+    {% if day_list_spec and day_list_spec_y %}
+    <div class="chart-container" id="chart2" style="margin-top:100px"></div>
+    <script>
+        var x_data2 = [{{ day_list_spec|join:", " }}];
+        var y_data2 = [{{ day_list_spec_y|join:", " }}];
+        console.log(x_data2)
+        var chart2 = echarts.init(document.getElementById('chart2'));
+        var option2 = {
+            title: {
+                text: "{{deliery_id}}号送货员{{deliery_name}}{{year}}年{{month}}月送货趋势一览"
+            },
+            xAxis: {
+                data: x_data2
+            },
+            yAxis: {
+
+            },
+            series: [{
+                name: '示例数据',
+                type: 'line',
+                data: y_data2
+            }]
+        };
+        chart2.setOption(option2);
+    </script> 
+    {% endif %}
+    {% if day_list and day_list_y and month_list and month_list_y%}
+    <div class="chart-container" id="chart3" style="margin-top:100px"></div>
+    <div class="chart-container" id="chart4" style="margin-top:100px"></div>
+    <script>
+       
+        var x_data3 = [{{ day_list|join:", " }}];
+        var y_data3 = [{{ day_list_y|join:", " }}];
+        console.log(x_data3)
+        var chart3 = echarts.init(document.getElementById('chart3'));
+        var option3 = {
+            title: {
+                text: "{{deliery_id}}号送货员{{deliery_name}}本月度送货趋势一览"
+            },
+            xAxis: {
+                data: x_data3
+            },
+            yAxis: {
+
+            },
+            series: [{
+                name: '示例数据',
+                type: 'line',
+                data: y_data3
+            }]
+        };
+        chart3.setOption(option3);
+        var x_data4 = [{{ month_list|join:", " }}];
+        var y_data4 = [{{ month_list_y|join:", " }}];
+        console.log(x_data4)
+        var chart4 = echarts.init(document.getElementById('chart4'));
+        var option4 = {
+            title: {
+                text: "{{deliery_id}}号送货员{{deliery_name}}本年度送货趋势一览"
+            },
+            xAxis: {
+                data: x_data4
+            },
+            yAxis: {
+
+            },
+            series: [{
+                name: '示例数据',
+                type: 'line',
+                data: y_data4
+            }]
+        };
+        chart4.setOption(option4);
+    
+    </script> 
+    {% endif %}
+</body>
+
+</html>

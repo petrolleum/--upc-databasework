@@ -1,0 +1,207 @@
+<html>
+
+<head>
+    <title>
+
+    </title>
+
+    {% load static %}
+    <script src="{% static 'js/jquery.js' %}"></script>
+    <style>
+        .header {
+            height: 40px;
+            background-color: red;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            color: white;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-link {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            margin-left: 20px;
+            text-decoration: none;
+            color: white;
+        }
+
+        .header-text {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            margin-left: 20px;
+        }
+
+        .chart-container {
+            width: 50%;
+            height: 400px;
+            float: left;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        /* 设置表头行的样式 */
+        tr.header-row {
+            background-color: #f2f2f2;
+        }
+
+        /* 设置奇数行的样式 */
+        tr:nth-child(odd) {
+            background-color: #e6e6e6;
+        }
+
+        /* 设置偶数行的样式 */
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        /* 设置单元格的样式 */
+        td {
+            padding: 8px;
+            border: 1px solid #ddd;
+        }
+
+        /* 设置表头单元格的样式 */
+        th {
+            padding: 8px;
+            border: 1px solid #ddd;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        #table_header {
+            font-size: 24px;
+            /* 调整字体大小 */
+            font-weight: bold;
+            /* 设置加粗 */
+            text-align: center;
+            /* 居中对齐 */
+            padding: 10px;
+            /* 添加内边距 */
+            background-color: #f2f2f2;
+            /* 设置背景颜色 */
+            border-radius: 5px;
+            /* 添加边框圆角 */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            /* 添加阴影效果 */
+            float: left
+        }
+    </style>
+</head>
+
+<body>
+    {% if error %}
+    <script>
+        alert("还未分配配送员，不能确认收货");
+    </script>
+    {% endif %}
+    <div class="header">
+        <div class="header-left">
+            <a href="../view_customer" class="header-link">首页</a>
+        </div>
+        <div class="header-right">
+            <a href="../home_customer" class="header-link">个人主页</a>
+            <a href="../../login/login_customer" class="header-link">退出登录</a>
+            <span class="header-text">你好{{customer_name}}</span>
+        </div>
+    </div>
+    <div>
+        <div id="table_header">购买历史记录</div>
+        <table>
+            <tr>
+                <td>出货编号</td>
+                <td>购买日期</td>
+                <td>购买煤气编号</td>
+                <td>购买煤气名称</td>
+                <td>购买数量</td>
+                <td>购买单价</td>
+                <td>配送员编号</td>
+                <td>配送员姓名</td>
+                <td>配送员电话</td>
+                <td>配送状态</td>
+                <td></td>
+            </tr>
+            {% if gas_out_view %}
+            {% for a,b,c,d,e,f,g,h,i,j,k in gas_out_view %}
+            <tr>
+                <td>{{a}}</td>
+                <td>{{b}}</td>
+                <td>{{c}}</td>
+                <td>{{d}}</td>
+                <td>{{e}}</td>
+                <td>{{f}}</td>
+                <td>{{g}}</td>
+                <td>{{h}}</td>
+                <td>{{i}}</td>
+                <td>{{j}}</td>
+                {% if not k%}
+                <td><button id="{{a}}confirm" onclick="submitForm()" class="button_confirm">确认收货</button></td>
+                {% endif %}
+                {% if k %}
+                <td></td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+            {% endif %}
+        </table>
+    </div>
+    <div style="display:none">
+        <form method="post" id="myForm">
+            <input name="confirm" id="gas_out_num" />
+        </form>
+    </div>
+    <script>
+        var button_confirms = document.querySelectorAll(".button_confirm");
+        button_confirms.forEach(element => {
+            id=element.id;
+            var regex = /\d+/g;
+            var match = id.match(regex);
+            id = match[0];
+            element.addEventListener("click", function () { postinf(id)});
+        })
+        function postinf(id) {
+            $.ajax(
+                {
+                    url: '',  // 替换为你的请求URL
+                    type: 'POST',  // 根据你的需求选择请求方法（POST、GET等）
+                    data: { confirm_id: id,},  // 替换为你要发送的数据
+                    success: function (response) {
+                        // 请求成功后的处理逻辑
+                        location.reload();
+                    },
+                    error: function (xhr, status, error) {
+                        // 请求失败后的处理逻辑
+                        console.log(error);
+                    }
+                }
+            )
+        }
+        function submitForm() {
+            var form = document.getElementById("myForm");
+            var gas_out_num = document.getElementById("gas_out_num");
+            var id = gas_out_num.id
+            var regex = /\d+/g;
+            var match = id.match(regex);
+            id = match[0];
+            gas_out_num.value = id
+            form.submit();
+        }
+    </script>
+</body>
+
+</html>

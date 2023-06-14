@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>客户注册</title>
+    <style>
+      .header-container {
+        height: 40px;
+        background-color: lightgray;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        padding: 0 20px;
+    }
+
+    /* Style for the header links */
+    .header-link {
+        margin-left: 10px;
+        text-decoration: none;
+        color: #333;
+        font-weight: bold;
+        padding: 10px 20px;
+        border: 2px solid #333;
+        border-radius: 5px;
+        background-color: lightblue;
+        transition: all 0.3s ease;
+    }
+
+    /* Hover effect */
+    .header-link:hover {
+        background-color: #333;
+        color: #fff;
+    }
+        body {
+          font-family: Arial, sans-serif;
+          background-color: #f2f2f2;
+          margin: 0;
+          padding: 20px;
+        }
+    
+        .outer {
+          display: flex;
+          justify-content: center;
+        }
+    
+        .inner {
+          background-color: #fff;
+          padding: 20px;
+          border-radius: 5px;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+          max-width: 400px;
+        }
+    
+        label {
+          display: block;
+          margin-bottom: 10px;
+          color: #333;
+          font-weight: bold;
+        }
+    
+        input[type="text"],
+        input[type="password"] {
+          width: 100%;
+          padding: 10px;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          box-sizing: border-box;
+          font-size: 16px;
+          margin-bottom: 10px;
+        }
+    
+        input[type="submit"] {
+          background-color: #4caf50;
+          color: #fff;
+          padding: 10px 20px;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 16px;
+        }
+    
+        input[type="submit"]:hover {
+          background-color: #45a049;
+        }
+      </style>
+</head>
+<body>
+  <div class="header-container" style="margin-bottom:50px">
+    <a href="../../login/login_customer" class="header-link">登录</a>
+    <a href="../../register/register_customer" class="header-link">注册</a>
+</div>
+<div class="outer">
+    <div class="inner">
+        <form method="post" action="">
+            
+           
+            <label for="i1">客户姓名</label>
+            <input type="text" id="i1" name="name">
+            <br>
+            <label for="i2">电话号码</label>
+            <input type="text" id="i2" name="phonenum">
+            <br>
+            <label for="i3">送货地址</label>
+            <input type="text" id="i3" name="address">
+            <br>
+            <label for="i4">密码</label>
+            <input type="text" id="i4" name="password">
+            <br>
+            <label for="i5">密码确认</label>
+            <input type="text" id="i5" name="password_again">
+            <br>
+            <input type="submit" value="提交">
+        </form>
+        {% if errorname %}
+        <p>{{errorname}}</p>
+        {% endif %}
+    </div>
+
+</div>
+</body>
+</html>
